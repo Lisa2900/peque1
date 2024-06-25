@@ -13,6 +13,7 @@ interface UpdateUserProps {
     codigo: string;
     cantidad: string;
     categoria: string;
+    precio: string; // Agrega el campo de precio
   };
 }
 
@@ -21,6 +22,7 @@ const UpdateUser: React.FC<UpdateUserProps> = ({ open, close, item }) => {
   const [codigo, setCodigo] = useState('');
   const [cantidad, setCantidad] = useState('');
   const [categoria, setCategoria] = useState('');
+  const [precio, setPrecio] = useState(''); // Agrega el estado para el precio
 
   useEffect(() => {
     // Llena los campos del formulario con los datos del producto seleccionado
@@ -28,6 +30,7 @@ const UpdateUser: React.FC<UpdateUserProps> = ({ open, close, item }) => {
     setCodigo(item.codigo);
     setCantidad(item.cantidad);
     setCategoria(item.categoria);
+    setPrecio(item.precio); // Llena el estado del precio
   }, [item]);
 
   const mostrarAlerta = () => {
@@ -44,7 +47,8 @@ const UpdateUser: React.FC<UpdateUserProps> = ({ open, close, item }) => {
         nombre,
         codigo,
         cantidad: parseInt(cantidad),
-        categoria
+        categoria,
+        precio: parseFloat(precio) // Convierte el precio a flotante antes de actualizar
       });
       mostrarAlerta(); // Muestra la alerta de éxito
       close(); // Cierra el modal después de actualizar el producto
@@ -76,6 +80,10 @@ const UpdateUser: React.FC<UpdateUserProps> = ({ open, close, item }) => {
               <div className="mb-4">
                 <IonLabel className="block text-white mb-1">Cantidad *</IonLabel>
                 <IonInput className="bg-zinc-900 text-white" type="number" value={cantidad} onIonChange={(e) => setCantidad(e.detail.value!)} required></IonInput>
+              </div>
+              <div className="mb-4">
+                <IonLabel className="block text-white mb-1">Precio *</IonLabel>
+                <IonInput className="bg-zinc-900 text-white" type="number" value={precio} onIonChange={(e) => setPrecio(e.detail.value!)} required></IonInput>
               </div>
               <div className="mb-4">
                 <IonLabel className="block text-white mb-1">Categoría *</IonLabel>

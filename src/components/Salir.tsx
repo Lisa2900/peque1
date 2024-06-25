@@ -15,7 +15,7 @@ const Salir: React.FC = () => {
   };
 
   return (
-    <IonButton onClick={handleLogout} color="danger">
+    <IonButton onClick={handleLogout} color="danger" >
       Cerrar sesión
     </IonButton>
   );

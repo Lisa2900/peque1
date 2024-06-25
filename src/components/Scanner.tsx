@@ -1,23 +1,37 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   IonContent,
   IonHeader,
-  IonPage,
   IonTitle,
   IonToolbar,
   IonButton,
+  IonInput,
   IonText,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+  IonGrid,
+  IonRow,
+  IonCol,
   IonModal,
+  IonIcon,
 } from '@ionic/react';
 import { isPlatform } from '@ionic/react';
 import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { ref, get, getDatabase, onValue } from 'firebase/database';
+import { app } from '../firebase';
+import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { phonePortraitOutline } from 'ionicons/icons';
 
 const Scanner: React.FC = () => {
+  const db = getDatabase(app);
+  const firestore = getFirestore(app);
   const [scannedData, setScannedData] = useState<string>('');
-  const [scannerActive, setScannerActive] = useState<boolean>(false);
+  const [productDetails, setProductDetails] = useState<any>(null);
+  const [manualCode, setManualCode] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const webScannerRef = useRef<Html5QrcodeScanner | null>(null);
+  const [webModalOpen, setWebModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const requestPermissions = async () => {
@@ -28,81 +42,204 @@ const Scanner: React.FC = () => {
     requestPermissions();
   }, []);
 
-  const scanBarcodeNative = async () => {
-    try {
-      const { barcodes } = await BarcodeScanner.scan({
-        formats: [BarcodeFormat.QrCode, BarcodeFormat.Code128, BarcodeFormat.Ean13],
-      });
-      if (barcodes.length > 0) {
-        setScannedData(barcodes[0].rawValue || 'No data found');
-        setIsModalOpen(true);
+  useEffect(() => {
+    const databaseRef = ref(db, 'codigo/value');
+    const unsubscribe = onValue(databaseRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const scannedValue = snapshot.val();
+        setScannedData(scannedValue);
+        fetchProductDetails(scannedValue); // Llamar a fetchProductDetails cuando se detecte un valor
+        setIsModalOpen(true); // Abrir el modal automáticamente cuando se detecte un valor
       } else {
-        setScannedData('No barcodes found');
+        setScannedData('');
+        setProductDetails(null);
+        setIsModalOpen(false); // Cerrar el modal si no hay valor
+        // Abrir modal en la versión web cuando no hay valor en Firebase
+        if (!isPlatform('android') && !isPlatform('ios')) {
+          setWebModalOpen(true);
+        }
       }
-      setScannerActive(false);
-    } catch (error) {
-      console.error(error);
-      setScannedData('Error scanning barcode');
-      setScannerActive(false);
-    }
-  };
+    });
 
-  const scanBarcodeWeb = () => {
-    webScannerRef.current = new Html5QrcodeScanner('reader', { fps: 10, qrbox: 500 }, false);
-    webScannerRef.current.render(
-      (decodedText) => {
-        setScannedData(decodedText);
-        webScannerRef.current?.clear();
-        setScannerActive(false);
-        setIsModalOpen(true);
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-  };
+    return () => {
+      unsubscribe();
+    };
+  }, [db]);
 
-  const scanBarcode = () => {
-    setScannerActive(true);
-    if (isPlatform('android') || isPlatform('ios')) {
-      scanBarcodeNative();
+  const fetchProductDetails = async (codigo: string) => {
+    const q = query(collection(firestore, 'inventario'), where('codigo', '==', codigo));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const productData = querySnapshot.docs[0].data();
+      setProductDetails(productData);
     } else {
-      scanBarcodeWeb();
+      setProductDetails(null);
     }
   };
 
-  const cancelScan = () => {
-    if (webScannerRef.current) {
-      webScannerRef.current.clear();
+  const openScannerModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleManualCodeInput = () => {
+    if (manualCode) {
+      setScannedData(manualCode);
+      fetchProductDetails(manualCode);
+      setIsModalOpen(true); // Abrir el modal cuando se ingresa un código manual
     }
-    setScannerActive(false);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setScannedData('');
+    setProductDetails(null);
+  };
+
+  const closeWebModal = () => {
+    setWebModalOpen(false);
+  };
+
+  const handleModalDidPresent = async () => {
+    if (isPlatform('android') || isPlatform('ios')) {
+      startNativeScan();
+    } else {
+      const databaseRef = ref(db, 'codigo/value');
+      const snapshot = await get(databaseRef);
+      if (snapshot.exists()) {
+        const mockBarcode = snapshot.val();
+        setScannedData(mockBarcode);
+        fetchProductDetails(mockBarcode);
+        setIsModalOpen(true); // Abrir el modal cuando se detecta un valor en la versión web
+      } else {
+        setScannedData('');
+        setProductDetails(null);
+        setIsModalOpen(false); // Cerrar el modal si no hay valor en la versión web
+        // Abrir modal en la versión web cuando no hay valor en Firebase
+        setWebModalOpen(true);
+      }
+    }
+  };
+
+  const startNativeScan = async () => {
+    try {
+      const { barcodes } = await BarcodeScanner.scan({
+        formats: [BarcodeFormat.QrCode, BarcodeFormat.Code128, BarcodeFormat.Ean13],
+      });
+      if (barcodes.length > 0) {
+        const scannedValue = barcodes[0].rawValue || 'No data found';
+        setScannedData(scannedValue);
+        fetchProductDetails(scannedValue);
+        setIsModalOpen(true); // Abrir el modal cuando se escanea desde la cámara
+      } else {
+        setScannedData('No barcodes found');
+      }
+    } catch (error) {
+      console.error(error);
+      setScannedData('Error scanning barcode');
+    }
   };
 
   return (
     <>
-      <IonButton onClick={scanBarcode} disabled={scannerActive}>Scan Barcode</IonButton>
-      {scannerActive && (
-        <IonButton onClick={cancelScan}>Cancel</IonButton>
-      )}
-      <IonModal isOpen={isModalOpen} onDidDismiss={closeModal}>
+      <IonButton expand="full" onClick={openScannerModal}>Escanear</IonButton>
+      
+      <IonModal isOpen={isModalOpen} onDidDismiss={closeModal} onDidPresent={handleModalDidPresent}>
         <IonHeader>
           <IonToolbar>
-            <IonTitle>Scanned Data</IonTitle>
-            <IonButton onClick={closeModal}>Close</IonButton>
+            <IonTitle>Escanear</IonTitle>
+            <IonButton onClick={closeModal} slot="end">Cerrar</IonButton>
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
+          <IonGrid>
+            <IonRow className="ion-justify-content-center">
+              <IonCol size="12" size-md="8" size-lg="6">
+                <IonInput
+                  className="ion-margin-top"
+                  value={manualCode}
+                  placeholder="Ingresar código manual"
+                  onIonChange={e => setManualCode(e.detail.value!)}
+                  clearInput
+                />
+                <IonButton expand="full" className="ion-margin-top" onClick={handleManualCodeInput}>
+                  Buscar
+                </IonButton>
+              </IonCol>
+            </IonRow>
+            {scannedData && (
+              <IonRow className="ion-justify-content-center ion-margin-top">
+                <IonCol size="12" size-md="8" size-lg="6">
+                  <IonCard>
+                    <IonCardHeader>
+                      <IonCardTitle>Código escaneado</IonCardTitle>
+                    </IonCardHeader>
+                    <IonCardContent>
+                      <IonText>
+                        <p>{scannedData}</p>
+                      </IonText>
+                    </IonCardContent>
+                  </IonCard>
+                </IonCol>
+              </IonRow>
+            )}
+            {productDetails ? (
+              <IonRow className="ion-justify-content-center ion-margin-top">
+                <IonCol size="12" size-md="8" size-lg="6">
+                  <IonCard>
+                    <IonCardHeader>
+                      <IonCardTitle>Detalles del Producto</IonCardTitle>
+                    </IonCardHeader>
+                    <IonCardContent>
+                      <IonText>
+                        <p><strong>Nombre:</strong> {productDetails.nombre}</p>
+                        <p><strong>Categoría:</strong> {productDetails.categoria}</p>
+                        <p><strong>Código:</strong> {productDetails.codigo}</p>
+                        <p><strong>Precio:</strong> {productDetails.precio}</p>
+                        <p><strong>Cantidad:</strong> {productDetails.cantidad}</p>
+                      </IonText>
+                    </IonCardContent>
+                  </IonCard>
+                </IonCol>
+              </IonRow>
+            ) : (
+              scannedData && (
+                <IonRow className="ion-justify-content-center ion-margin-top">
+                  <IonCol size="12" size-md="8" size-lg="6">
+                    <IonCard>
+                      <IonCardHeader>
+                        <IonCardTitle>No se encontraron detalles del producto</IonCardTitle>
+                      </IonCardHeader>
+                      <IonCardContent>
+                        <IonText>
+                          <p>No se encontraron detalles del producto para este código.</p>
+                        </IonText>
+                      </IonCardContent>
+                    </IonCard>
+                  </IonCol>
+                </IonRow>
+              )
+            )}
+          </IonGrid>
+        </IonContent>
+      </IonModal>
+
+      <IonModal isOpen={webModalOpen} onDidDismiss={closeWebModal}>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>No se encontró valor en Firebase</IonTitle>
+            <IonButton onClick={closeWebModal} slot="end">
+              Cerrar
+            </IonButton>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent className="ion-padding ion-text-center">
+          <IonIcon icon={phonePortraitOutline} style={{ fontSize: '100px', color: 'black' }} />
           <IonText>
-            <p>{scannedData}</p>
+            <p>Por favor, escanea el código desde la aplicación móvil.</p>
           </IonText>
         </IonContent>
       </IonModal>
-      <div id="reader" style={{ display: scannerActive ? 'block' : 'none' }}></div>
     </>
   );
 };

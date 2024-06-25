@@ -15,6 +15,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ abrir, cerra }) => {
   const [codigo, setCodigo] = useState('');
   const [cantidad, setCantidad] = useState('');
   const [categoria, setCategoria] = useState('');
+  const [precio, setPrecio] = useState(''); // Agregar estado para el precio
 
   const mostrarAlerta = () => {
     swal({
@@ -30,7 +31,8 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ abrir, cerra }) => {
         nombre,
         codigo,
         cantidad: parseInt(cantidad),
-        categoria
+        categoria,
+        precio: parseFloat(precio) // Convertir a flotante
       });
       console.log("Document written with ID: ", docRef.id);
       mostrarAlerta(); // Muestra la alerta de éxito
@@ -63,6 +65,10 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ abrir, cerra }) => {
               <div className="mb-4">
                 <IonLabel className="block text-white mb-1">Cantidad *</IonLabel>
                 <IonInput className="bg-zinc-900 text-white" type="number" value={cantidad} onIonChange={(e) => setCantidad(e.detail.value!)} required></IonInput>
+              </div>
+              <div className="mb-4">
+                <IonLabel className="block text-white mb-1">Precio *</IonLabel>
+                <IonInput className="bg-zinc-900 text-white" type="number" value={precio} onIonChange={(e) => setPrecio(e.detail.value!)} required></IonInput>
               </div>
               <div className="mb-4">
                 <IonLabel className="block text-white mb-1">Categoría *</IonLabel>
