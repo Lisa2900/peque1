@@ -1,107 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import { IonButton, IonModal, IonContent, IonHeader, IonToolbar, IonTitle, IonList, IonItem, IonLabel } from '@ionic/react';
-import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { IonContent, IonHeader, IonToolbar, IonTitle, IonList, IonItem, IonLabel, IonText, IonSearchbar } from '@ionic/react';
+import { collection, getDocs, query, where, QuerySnapshot, DocumentData, CollectionReference } from 'firebase/firestore';
 import { db } from '../firebase';
+import RepairModal from './Modales/RepairModal';
 
 interface Repair {
   id: string;
   title: string;
   description: string;
   date: string;
+  fechaRegistro: {
+    seconds: number;
+    nanoseconds: number;
+  };
   brand: string;
   model: string;
   deviceType: string;
   repairType: string;
   status: string;
+  folio: string; // Agregamos el campo folio
 }
-
-interface RepairModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  repair: Repair;
-}
-
-const RepairModal: React.FC<RepairModalProps> = ({ isOpen, onClose, repair }) => {
-  const handleStatusChange = async () => {
-    try {
-      // Actualizar el estado de la reparación a "entregado" en la base de datos
-      await updateDoc(doc(db, 'reparaciones', repair.id), { status: 'entregado' });
-      console.log('Estado cambiado a entregado');
-    } catch (error) {
-      console.error('Error al cambiar el estado:', error);
-    }
-  };
-
-  const handlePrintReceipt = () => {
-    // Aquí agregarías la lógica para imprimir el recibo
-    console.log('Recibo impreso');
-  };
-
-  return (
-    <IonModal isOpen={isOpen} onDidDismiss={onClose}>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Detalles de reparación</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent>
-        <IonList>
-          <IonItem>
-            <IonLabel>Estado:</IonLabel>
-            <IonLabel color={repair.status === 'pendiente' ? 'primary' : 'success'}>{repair.status}</IonLabel>
-          </IonItem>
-          <IonItem>
-            <IonLabel>Descripción:</IonLabel>
-            <IonLabel>{repair.description}</IonLabel>
-          </IonItem>
-          <IonItem>
-            <IonLabel>Marca:</IonLabel>
-            <IonLabel>{repair.brand}</IonLabel>
-          </IonItem>
-          <IonItem>
-            <IonLabel>Modelo:</IonLabel>
-            <IonLabel>{repair.model}</IonLabel>
-          </IonItem>
-          <IonItem>
-            <IonLabel>Tipo de dispositivo:</IonLabel>
-            <IonLabel>{repair.deviceType}</IonLabel>
-          </IonItem>
-          <IonItem>
-            <IonLabel>Tipo de reparación:</IonLabel>
-            <IonLabel>{repair.repairType}</IonLabel>
-          </IonItem>
-          {/* Agrega más detalles de la reparación aquí */}
-        </IonList>
-        <IonButton expand="full" onClick={handleStatusChange}>Cambiar estado a entregado</IonButton>
-        <IonButton expand="full" onClick={handlePrintReceipt}>Imprimir recibo</IonButton>
-        <IonButton expand="full" onClick={onClose}>Cerrar</IonButton>
-      </IonContent>
-    </IonModal>
-  );
-};
 
 const Repairs: React.FC = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [currentRepair, setCurrentRepair] = useState<Repair | null>(null);
   const [repairs, setRepairs] = useState<Repair[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [searchText, setSearchText] = useState<string>('');
 
   useEffect(() => {
     const fetchRepairs = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'reparaciones'));
+        const repairCollection: CollectionReference<DocumentData> = collection(db, 'reparaciones');
+        let queryRef = repairCollection;
+
+        // Aplicamos filtro si hay texto de búsqueda
+        if (searchText !== '') {
+          queryRef = query(repairCollection, where('folio', '==', searchText)) as CollectionReference<DocumentData>;
+        }
+
+        const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(queryRef);
         const fetchedRepairs: Repair[] = [];
         querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          fetchedRepairs.push({ id: doc.id, ...data });
+          const data = doc.data() as Repair;
+          const { id, ...rest } = data; // Extraer 'id' para evitar duplicación
+          fetchedRepairs.push({ id: doc.id, ...rest });
         });
         setRepairs(fetchedRepairs);
+        console.log('Reparaciones obtenidas:', fetchedRepairs);
       } catch (error) {
         console.error('Error al obtener las reparaciones:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchRepairs();
-  }, []);
+  }, [searchText]);
 
   const handleOpenModal = (repair: Repair) => {
     setCurrentRepair(repair);
@@ -113,24 +68,39 @@ const Repairs: React.FC = () => {
     setModalOpen(false);
   };
 
+  const handleSearch = (e: CustomEvent) => {
+    const text = e.detail.value as string;
+    setSearchText(text);
+  };
+
   return (
     <>
-    <IonHeader>
+      <IonHeader>
         <IonToolbar>
           <IonTitle>Reparaciones</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonList>
-        {repairs.map((repair) => (
-          <IonItem key={repair.id} onClick={() => handleOpenModal(repair)}>
-            <IonLabel>
-              <h2>{repair.title}</h2>
-              <p>{repair.date}</p>
-            </IonLabel>
-          </IonItem>
-        ))}
-      </IonList>
-      <RepairModal isOpen={modalOpen} onClose={handleCloseModal} repair={currentRepair || { id: '', title: '', description: '', date: '', brand: '', model: '', deviceType: '', repairType: '', status: '' }} />
+      <IonContent>
+        <IonSearchbar value={searchText} onIonInput={handleSearch} placeholder="Buscar por folio"></IonSearchbar>
+        {loading ? (
+          <IonText>Cargando...</IonText>
+        ) : (
+          <IonList>
+            {repairs.map((repair) => (
+              <IonItem key={repair.id} onClick={() => handleOpenModal(repair)}>
+                <IonLabel>
+                  <h2>{repair.title}</h2>
+                  <p>Estado: {repair.status}</p>
+                  <p>Fecha: {new Date(repair.fechaRegistro.seconds * 1000).toLocaleString()}</p>
+                  <p>Marca: {repair.brand}</p>
+                  <p>Modelo: {repair.model}</p>
+                </IonLabel>
+              </IonItem>
+            ))}
+          </IonList>
+        )}
+      </IonContent>
+      <RepairModal isOpen={modalOpen} onClose={handleCloseModal} repair={currentRepair} />
     </>
   );
 };
