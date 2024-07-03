@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { IonButton, IonContent, IonList, IonItem, IonLabel, IonIcon } from '@ionic/react';
+import { IonButton, IonContent, IonList, IonItem, IonLabel, IonIcon, IonSpinner } from '@ionic/react';
 import UserCreation from '../components/NewProduct/UserCreation';
 import DeleteButton from './Botones/DeleteButton';
 import UpdateUser from '../components/NewProduct/UpdateUser';
@@ -13,10 +13,11 @@ interface InventarioItem {
     id: string;
     nombre: string;
     codigo: string;
-    cantidad: number;
+    cantidad: string; // Cambiar a string
     categoria: string;
-    precio: number; // Nuevo campo para el precio
+    precio: string; // Cambiar a string
 }
+
 
 interface jsPDFWithAutoTable extends jsPDF {
     autoTable: (options: any) => jsPDF;
@@ -28,12 +29,19 @@ const App: React.FC = () => {
     const [selectedItem, setSelectedItem] = useState<InventarioItem | null>(null);
     const [tableLoaded, setTableLoaded] = useState<boolean>(false);
     const [inventario, setInventario] = useState<InventarioItem[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
     const fetchData = async () => {
-        const querySnapshot = await getDocs(collection(db, 'inventario'));
-        const data = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as InventarioItem[];
-        setInventario(data);
-        setTableLoaded(true);
+        try {
+            const querySnapshot = await getDocs(collection(db, 'inventario'));
+            const data = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as InventarioItem[];
+            setInventario(data);
+            setTableLoaded(true);
+        } catch (error) {
+            console.error("Error fetching data: ", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -48,7 +56,6 @@ const App: React.FC = () => {
 
         const doc = new jsPDF() as jsPDFWithAutoTable;
 
-        // Calcular la posición horizontal para centrar el título
         const title = "Reporte de inventario";
         const fontSize = 18;
         doc.setFontSize(fontSize);
@@ -56,10 +63,8 @@ const App: React.FC = () => {
         const titleWidth = doc.getStringUnitWidth(title) * fontSize / doc.internal.scaleFactor;
         const titleX = (pageWidth - titleWidth) / 2;
 
-        // Agregar el título centrado en la parte superior
         doc.text(title, titleX, 20);
 
-        // Crear una tabla temporal para la exportación a PDF
         const tempTable = document.createElement('table');
         tempTable.innerHTML = `
             <thead>
@@ -86,15 +91,13 @@ const App: React.FC = () => {
             </tbody>
         `;
 
-        // Agregar la tabla al PDF
         doc.autoTable({
             html: tempTable,
-            startY: 30, // Ajusta la posición vertical de la tabla para que no se superponga con el título
+            startY: 30,
             styles: { overflow: 'linebreak' },
             columnStyles: { text: { cellWidth: 'wrap' } },
         });
 
-        // Guardar el documento PDF
         doc.save('tabla.pdf');
     };
 
@@ -113,34 +116,36 @@ const App: React.FC = () => {
                 </div>
 
                 <div className="overflow-x-auto">
-                    <IonList id="table-to-export" className="min-w-full divide-y divide-gray-200">
-                        <IonItem className="bg-gray-100 flex flex-col md:flex-row">
-                            <IonLabel className="w-full md:w-1/6 text-center font-medium p-2">Código del Producto</IonLabel>
-                            <IonLabel className="w-full md:w-1/6 text-center font-medium p-2">Nombre Del Producto</IonLabel>
-                            <IonLabel className="w-full md:w-1/6 text-center font-medium p-2">Cantidad</IonLabel>
-                            <IonLabel className="w-full md:w-1/6 text-center font-medium p-2">Categoría</IonLabel>
-                            <IonLabel className="w-full md:w-1/6 text-center font-medium p-2">Precio</IonLabel> 
-                            <IonLabel className="w-full md:w-1/6 text-center font-medium p-2">Acciones</IonLabel>
-                        </IonItem>
-
-                        {inventario.map(item => (
-                            <IonItem key={item.codigo} className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
-                                <IonLabel className="w-full md:w-1/6 text-center p-2">{item.codigo}</IonLabel>
-                                <IonLabel className="w-full md:w-1/6 text-center p-2">{item.nombre}</IonLabel>
-                                <IonLabel className="w-full md:w-1/6 text-center p-2">{item.cantidad}</IonLabel>
-                                <IonLabel className="w-full md:w-1/6 text-center p-2">{item.categoria}</IonLabel>
-                                <IonLabel className="w-full md:w-1/6 text-center p-2">{item.precio}</IonLabel> 
-                                <div className="w-full md:w-1/6 flex justify-center md:justify-end items-center space-x-2 p-2">
-                                    <IonButton fill="clear" className="p-0 m-0" onClick={() => { setSelectedItem(item); setOpenForm(true); }}>
-                                        <IonIcon icon={pencil} className="icon-edit" />
-                                    </IonButton>
-                                    <DeleteButton itemId={item.id} onDeleteSuccess={fetchData} />
-                                </div>
+                    {loading ? (
+                        <IonSpinner name="crescent" />
+                    ) : (
+                        <IonList id="table-to-export" className="min-w-full divide-y divide-gray-200">
+                            <IonItem className="bg-gray-100 flex flex-col md:flex-row">
+                                <IonLabel className="w-full md:w-1/6 text-center font-medium p-2">Código del Producto</IonLabel>
+                                <IonLabel className="w-full md:w-1/6 text-center font-medium p-2">Nombre Del Producto</IonLabel>
+                                <IonLabel className="w-full md:w-1/6 text-center font-medium p-2">Cantidad</IonLabel>
+                                <IonLabel className="w-full md:w-1/6 text-center font-medium p-2">Categoría</IonLabel>
+                                <IonLabel className="w-full md:w-1/6 text-center font-medium p-2">Precio</IonLabel>
+                                <IonLabel className="w-full md:w-1/6 text-center font-medium p-2">Acciones</IonLabel>
                             </IonItem>
-                        ))}
 
-
-                    </IonList>
+                            {inventario.map(item => (
+                                <IonItem key={item.codigo} className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                                    <IonLabel className="w-full md:w-1/6 text-center p-2">{item.codigo}</IonLabel>
+                                    <IonLabel className="w-full md:w-1/6 text-center p-2">{item.nombre}</IonLabel>
+                                    <IonLabel className="w-full md:w-1/6 text-center p-2">{item.cantidad}</IonLabel>
+                                    <IonLabel className="w-full md:w-1/6 text-center p-2">{item.categoria}</IonLabel>
+                                    <IonLabel className="w-full md:w-1/6 text-center p-2">{item.precio}</IonLabel>
+                                    <div className="w-full md:w-1/6 flex justify-center md:justify-end items-center space-x-2 p-2">
+                                        <IonButton fill="clear" className="p-0 m-0" onClick={() => { setSelectedItem(item); setOpenForm(true); }}>
+                                            <IonIcon icon={pencil} className="icon-edit" />
+                                        </IonButton>
+                                        <DeleteButton itemId={item.id} onDeleteSuccess={fetchData} />
+                                    </div>
+                                </IonItem>
+                            ))}
+                        </IonList>
+                    )}
                 </div>
             </div>
 
