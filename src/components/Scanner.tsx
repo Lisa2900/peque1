@@ -42,30 +42,6 @@ const Scanner: React.FC = () => {
     requestPermissions();
   }, []);
 
-  useEffect(() => {
-    const databaseRef = ref(db, 'codigo/value');
-    const unsubscribe = onValue(databaseRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const scannedValue = snapshot.val();
-        setScannedData(scannedValue);
-        fetchProductDetails(scannedValue); // Llamar a fetchProductDetails cuando se detecte un valor
-        setIsModalOpen(true); // Abrir el modal automáticamente cuando se detecte un valor
-      } else {
-        setScannedData('');
-        setProductDetails(null);
-        setIsModalOpen(false); // Cerrar el modal si no hay valor
-        // Abrir modal en la versión web cuando no hay valor en Firebase
-        if (!isPlatform('android') && !isPlatform('ios')) {
-          setWebModalOpen(true);
-        }
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [db]);
-
   const fetchProductDetails = async (codigo: string) => {
     const q = query(collection(firestore, 'inventario'), where('codigo', '==', codigo));
     const querySnapshot = await getDocs(q);
@@ -86,7 +62,7 @@ const Scanner: React.FC = () => {
     if (manualCode) {
       setScannedData(manualCode);
       fetchProductDetails(manualCode);
-      setIsModalOpen(true); // Abrir el modal cuando se ingresa un código manual
+      setIsModalOpen(true);
     }
   };
 
@@ -110,12 +86,10 @@ const Scanner: React.FC = () => {
         const mockBarcode = snapshot.val();
         setScannedData(mockBarcode);
         fetchProductDetails(mockBarcode);
-        setIsModalOpen(true); // Abrir el modal cuando se detecta un valor en la versión web
+        setIsModalOpen(true);
       } else {
         setScannedData('');
         setProductDetails(null);
-        setIsModalOpen(false); // Cerrar el modal si no hay valor en la versión web
-        // Abrir modal en la versión web cuando no hay valor en Firebase
         setWebModalOpen(true);
       }
     }
@@ -130,7 +104,7 @@ const Scanner: React.FC = () => {
         const scannedValue = barcodes[0].rawValue || 'No data found';
         setScannedData(scannedValue);
         fetchProductDetails(scannedValue);
-        setIsModalOpen(true); // Abrir el modal cuando se escanea desde la cámara
+        setIsModalOpen(true);
       } else {
         setScannedData('No barcodes found');
       }

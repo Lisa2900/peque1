@@ -23,12 +23,12 @@ const VenderReparar: React.FC = () => {
     <>
       <IonRow>
         <IonCol size="12">
-          <IonButton expand="full" onClick={handleSalesButtonClick}>Ventas</IonButton>
+          <IonButton expand="full" onClick={handleSalesButtonClick}>Vender Articulo</IonButton>
         </IonCol>
       </IonRow>
       <IonRow>
         <IonCol size="12">
-          <IonButton expand="full" onClick={handleServiceButtonClick}>Servicios</IonButton>
+          <IonButton expand="full" onClick={handleServiceButtonClick}>Registrar Reparacio</IonButton>
         </IonCol>
       </IonRow>
       <BuscarProducto showModal={showBuscarProductoModal} setShowModal={setShowBuscarProductoModal} />

@@ -3,6 +3,7 @@ import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonList,
 import { collection, getDocs, query, where, doc, updateDoc, Timestamp, addDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import VerDetalle from './VerDetalle';
+import Scanner from '../Scanner';
 
 
 interface BuscarProductoProps {
@@ -136,11 +137,7 @@ const BuscarProducto: React.FC<BuscarProductoProps> = ({ showModal, setShowModal
           onIonChange={handleSearchInputChange}
         ></IonInput>
         <IonButton expand="full" onClick={handleSearch}>Buscar</IonButton>
-        <IonButton expand="full" onClick={() => setScan(true)}>Escanear</IonButton>
-        {scan && (
-          // Componente de escaneo QR
-          <div>Escaneo QR</div>
-        )}
+       <Scanner/>
         <IonList>
           {resultados.map((producto, index) => (
             <IonItem key={index}>
