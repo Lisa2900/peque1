@@ -1,0 +1,18 @@
+.custom-input-container {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  
+  .custom-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    outline: none;
+  }
+  .input-focused {
+    border: 1px solid #ccc; /* Color del borde cuando el input está enfocado */
+  }
+  
