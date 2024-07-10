@@ -8,6 +8,7 @@ import 'jspdf-autotable';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { pencil } from "ionicons/icons";
+import {Button} from "@nextui-org/react";
 
 interface InventarioItem {
     id: string;
@@ -103,13 +104,14 @@ const App: React.FC = () => {
             <div className="container mt-4 px-4">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
                     <div className="flex flex-row space-x-2">
-                        <IonButton color="primary" onClick={() => setCerraFrom(!estadoFrom)}>
+                        <Button color="primary" onClick={() => setCerraFrom(!estadoFrom)}>
                             Agregar nuevo producto
-                        </IonButton>
-                        <IonButton onClick={handleExportToPDF}>
+                        </Button>
+                        <Button onClick={handleExportToPDF}>
                             Exportar a PDF
-                        </IonButton>
+                        </Button>
                     </div>
+        
                 </div>
 
                 <div className="overflow-x-auto">

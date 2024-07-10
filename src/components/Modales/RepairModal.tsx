@@ -2,6 +2,7 @@ import React from 'react';
 import { IonButton, IonModal, IonContent, IonHeader, IonToolbar, IonTitle, IonList, IonItem, IonLabel } from '@ionic/react';
 import { updateDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
+import Recibo from '../Recibor'; // Importa el componente Recibo
 
 interface RepairModalProps {
   isOpen: boolean;
@@ -92,7 +93,7 @@ const RepairModal: React.FC<RepairModalProps> = ({ isOpen, onClose, repair }) =>
           {/* Agrega más detalles de la reparación según sea necesario */}
         </IonList>
         <IonButton expand="full" onClick={handleStatusChange}>Cambiar estado a entregado</IonButton>
-        <IonButton expand="full" onClick={handlePrintReceipt}>Imprimir recibo</IonButton>
+        <Recibo repair={repair} /> {/* Usa el componente Recibo */}
         <IonButton expand="full" onClick={onClose}>Cerrar</IonButton>
       </IonContent>
     </IonModal>

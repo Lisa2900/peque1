@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { IonButton, IonItem, IonLabel, IonList } from '@ionic/react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
+import {Button} from "@nextui-org/react";
+import {Card, CardHeader, CardBody, Image} from "@nextui-org/react";
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 
@@ -85,15 +87,14 @@ function SalesSection() {
 
     doc.save('reporte_ventas.pdf');
   };
-
   return (
     <div className="p-4 bg-zinc-900 rounded-lg shadow-md text-white mb-4">
       <h2 className="text-xl font-bold mb-4">Ventas del día</h2>
       <SalesList sales={sales} />
       <p className="font-bold">Total de venta: ${totalSales}</p>
       <div className="flex justify-end mt-4">
-        <IonButton color="danger">Ver reportes anteriores</IonButton>
-        <IonButton onClick={generateReport}>Generar reporte</IonButton>
+        <Button color="danger" className='mr-2'>Ver reportes anteriores</Button>
+        <Button color="primary" onClick={generateReport}>Generar reporte</Button>
       </div>
     </div>
   );

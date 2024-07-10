@@ -9,8 +9,19 @@ module.exports = {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        print: { raw: "print" },
+        'print': {'raw': 'print'},
+      },
+    },
+  },
+  variants: {
+    extend: {
+      display: ['print'],
+      
+    }
   },
   darkMode: "class",
-  plugins: [nextui()]
+  plugins: [nextui()],
 }

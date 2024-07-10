@@ -104,8 +104,8 @@ const App: React.FC = () => {
           </IonMenu>
         )}
         <IonPage id="main-content">
-          <IonHeader>
-            <IonToolbar>
+        <IonHeader className={isPlatform('desktop') ? 'print:hidden' : ''}>
+        <IonToolbar>
               {loggedIn && isLargeScreen && (
                 <IonButtons slot="start">
                   <IonMenuButton />
@@ -130,7 +130,7 @@ const App: React.FC = () => {
                     <Route exact path="/">
                       <Redirect to="/inicio" />
                     </Route>
-                    <IonTabs className="block md:hidden"> {/* Ocultar IonTabs en pantallas grandes */}
+                    <IonTabs className={`block md:hidden ${isPlatform('desktop') ? 'print:hidden' : ''}`}>
                       <IonRouterOutlet>
                         <Route exact path="/inicio" component={Inicio} />
                         <Route exact path="/inventario" component={Inventario} />

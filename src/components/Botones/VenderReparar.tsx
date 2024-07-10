@@ -6,6 +6,7 @@ import {
 import React, { useState } from 'react';
 import BuscarProducto from '../Modales/BuscarProducto';
 import RegistrarReparacion from '../Modales/RegistrarReparacion';
+import {Button} from "@nextui-org/react";
 
 const VenderReparar: React.FC = () => {
   const [showBuscarProductoModal, setShowBuscarProductoModal] = useState(false);
@@ -23,12 +24,12 @@ const VenderReparar: React.FC = () => {
     <>
       <IonRow>
         <IonCol size="12">
-          <IonButton expand="full" onClick={handleSalesButtonClick}>Ventas</IonButton>
+          <Button color="primary" variant="solid" onClick={handleSalesButtonClick}>Ventas</Button>
         </IonCol>
       </IonRow>
-      <IonRow>
-        <IonCol size="12">
-          <IonButton expand="full" onClick={handleServiceButtonClick}>Servicios</IonButton>
+      <IonRow >
+        <IonCol size="12" className='ml-[90px] mt-[-50px]'>
+          <Button color="primary" variant="solid" onClick={handleServiceButtonClick}>Servicios</Button>
         </IonCol>
       </IonRow>
       <BuscarProducto showModal={showBuscarProductoModal} setShowModal={setShowBuscarProductoModal} />

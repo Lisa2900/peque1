@@ -23,7 +23,8 @@ import { ref, get, getDatabase, onValue } from 'firebase/database';
 import { app } from '../firebase';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import { phonePortraitOutline } from 'ionicons/icons';
-
+import {Button} from "@nextui-org/react";
+import {Card, CardHeader, CardBody, CardFooter, Divider, Link, Image} from "@nextui-org/react";
 const Scanner: React.FC = () => {
   const db = getDatabase(app);
   const firestore = getFirestore(app);
@@ -148,50 +149,54 @@ const Scanner: React.FC = () => {
         <IonHeader>
           <IonToolbar>
             <IonTitle>Escanear</IonTitle>
-            <IonButton onClick={closeModal} slot="end">Cerrar</IonButton>
+            <Button onClick={closeModal} slot="end" className="bg-red-500 text-white px-2 py-4">  X</Button>
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
-          <IonGrid>
-            <IonRow className="ion-justify-content-center">
-              <IonCol size="12" size-md="8" size-lg="6">
-                <IonInput
-                  className="ion-margin-top"
-                  value={manualCode}
+        <IonGrid>
+        <IonRow  className="flex items-center justify-center">
+        <IonCol size="12" size-md="8" size-lg="6">
+        <div className="flex flex-col items-center">
+
+        <IonInput
+          className="ion-margin-top w-full max-w-md"
+          value={manualCode}
                   placeholder="Ingresar código manual"
                   onIonChange={e => setManualCode(e.detail.value!)}
                   clearInput
                 />
-                <IonButton expand="full" className="ion-margin-top" onClick={handleManualCodeInput}>
+                <Button color="primary" variant="solid"           className="ion-margin-top bg-blue-500 hover:bg-red-700 text-white px-8 py-4 text-lg"  
+                onClick={handleManualCodeInput}>
                   Buscar
-                </IonButton>
+                </Button>
+                </div>
               </IonCol>
             </IonRow>
             {scannedData && (
               <IonRow className="ion-justify-content-center ion-margin-top">
                 <IonCol size="12" size-md="8" size-lg="6">
-                  <IonCard>
+                  <Card className='bg-black'>
                     <IonCardHeader>
                       <IonCardTitle>Código escaneado</IonCardTitle>
                     </IonCardHeader>
                     <IonCardContent>
-                      <IonText>
+                    <IonText style={{color:'white'}}>
                         <p>{scannedData}</p>
                       </IonText>
                     </IonCardContent>
-                  </IonCard>
+                  </Card>
                 </IonCol>
               </IonRow>
             )}
             {productDetails ? (
               <IonRow className="ion-justify-content-center ion-margin-top">
                 <IonCol size="12" size-md="8" size-lg="6">
-                  <IonCard>
+                  <Card className='bg-black'>
                     <IonCardHeader>
                       <IonCardTitle>Detalles del Producto</IonCardTitle>
                     </IonCardHeader>
                     <IonCardContent>
-                      <IonText>
+                    <IonText style={{color:'white'}}>
                         <p><strong>Nombre:</strong> {productDetails.nombre}</p>
                         <p><strong>Categoría:</strong> {productDetails.categoria}</p>
                         <p><strong>Código:</strong> {productDetails.codigo}</p>
@@ -199,23 +204,23 @@ const Scanner: React.FC = () => {
                         <p><strong>Cantidad:</strong> {productDetails.cantidad}</p>
                       </IonText>
                     </IonCardContent>
-                  </IonCard>
+                  </Card>
                 </IonCol>
               </IonRow>
             ) : (
               scannedData && (
                 <IonRow className="ion-justify-content-center ion-margin-top">
                   <IonCol size="12" size-md="8" size-lg="6">
-                    <IonCard>
+                    <Card className='bg-black'>
                       <IonCardHeader>
                         <IonCardTitle>No se encontraron detalles del producto</IonCardTitle>
                       </IonCardHeader>
                       <IonCardContent>
-                        <IonText>
+                      <IonText style={{color:"white"}}>
                           <p>No se encontraron detalles del producto para este código.</p>
                         </IonText>
                       </IonCardContent>
-                    </IonCard>
+                    </Card>
                   </IonCol>
                 </IonRow>
               )
