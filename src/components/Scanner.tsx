@@ -143,7 +143,11 @@ const Scanner: React.FC = () => {
 
   return (
     <>
-      <IonButton expand="full" onClick={openScannerModal}>Escanear</IonButton>
+      <Button expand="full" 
+       className="ion-margin-top bg-blue-500 hover:bg-red-700 text-white px-8 py-4 text-lg"
+      onClick={openScannerModal}
+      style={{ width: '100%', marginBottom: '10px' }}
+      >Escanear</Button>
       
       <IonModal isOpen={isModalOpen} onDidDismiss={closeModal} onDidPresent={handleModalDidPresent}>
         <IonHeader>

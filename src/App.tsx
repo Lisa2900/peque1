@@ -26,7 +26,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import NotFound from './pages/NotFound';
 import { home, list, construct, addCircle } from 'ionicons/icons';
-
+////
 import '@ionic/react/css/core.css';
 import '@ionic/react/css/normalize.css';
 import '@ionic/react/css/structure.css';
@@ -43,6 +43,7 @@ import Inicio from './pages/sistema/Inicio';
 import Inventario from './pages/sistema/Inventario';
 import Servicios from './pages/sistema/Servicios';
 import Mas from './pages/sistema/Mas';
+import logo from './img/Logonuevoxd.png'; // Asegúrate de tener la imagen en tu proyecto
 
 setupIonicReact();
 
@@ -75,37 +76,37 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         {loggedIn && isLargeScreen && (
-          <IonMenu contentId="main-content">
+          <IonMenu contentId="main-content" >
             <IonHeader>
-              <IonToolbar>
-                <IonTitle>Menu Content</IonTitle>
-              </IonToolbar>
             </IonHeader>
-            <IonContent className="ion-padding">
-              <IonList>
-                <IonItem routerLink="/inicio">
+            <IonContent className="ion-padding rounded-lg px-0 py-10" >
+              <IonList  className='mt-[-20px]  w-80 h-[-200px] px-0 py-60 rounded-lg ml-[-15px]'>
+              <IonTitle className='mt-[-200px] py-2'>Menu</IonTitle>
+              <img src={logo} alt="CFE" className="ml-10  " style={{ width: '80%', maxWidth: '150px' }} />
+                <IonItem routerLink="/inicio" className='mt-9 rounded-lg'>
                   <IonIcon slot="start" icon={home} />
                   <IonLabel>Inicio</IonLabel>
                 </IonItem>
-                <IonItem routerLink="/inventario">
+                <IonItem routerLink="/inventario" className='mt-9 rounded-lg'>
                   <IonIcon slot="start" icon={list} />
                   <IonLabel>Inventario</IonLabel>
                 </IonItem>
-                <IonItem routerLink="/servicios">
+                <IonItem routerLink="/servicios" className='mt-9 rounded-lg'>
                   <IonIcon slot="start" icon={construct} />
                   <IonLabel>Servicios</IonLabel>
                 </IonItem>
-                <IonItem routerLink="/mas">
+                <IonItem routerLink="/mas" className='mt-9 rounded-lg'>
                   <IonIcon slot="start" icon={addCircle} />
                   <IonLabel>Mas</IonLabel>
                 </IonItem>
               </IonList>
+              
             </IonContent>
           </IonMenu>
         )}
         <IonPage id="main-content">
-        <IonHeader className={isPlatform('desktop') ? 'print:hidden' : ''}>
-        <IonToolbar>
+          <IonHeader>
+            <IonToolbar>
               {loggedIn && isLargeScreen && (
                 <IonButtons slot="start">
                   <IonMenuButton />
@@ -130,7 +131,7 @@ const App: React.FC = () => {
                     <Route exact path="/">
                       <Redirect to="/inicio" />
                     </Route>
-                    <IonTabs className={`block md:hidden ${isPlatform('desktop') ? 'print:hidden' : ''}`}>
+                    <IonTabs className="block md:hidden"> {/* Ocultar IonTabs en pantallas grandes */}
                       <IonRouterOutlet>
                         <Route exact path="/inicio" component={Inicio} />
                         <Route exact path="/inventario" component={Inventario} />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IonContent, IonHeader, IonList, IonItem, IonLabel, IonButton, IonGrid, IonRow, IonCol, IonModal ,IonToolbar, IonTitle, IonInput} from '@ionic/react';
 import Logo from '../img/LOGO copy.png';
+import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Avatar} from "@nextui-org/react";
 
 const Header = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -14,7 +15,7 @@ const Header = () => {
   }, []);
 
   return (
-    <IonHeader style={{ backgroundColor: 'red' }}>
+    <IonHeader className='bg-red-600 rounded-b-3xl'>
       <IonGrid>
         <IonRow className="ion-align-items-center mt-[-20px]">
           <IonCol size="6" className="ion-text-center sm:ion-text-left">

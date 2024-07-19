@@ -7,7 +7,7 @@ function Search() {
     }
     return (
        
-          <IonSearchbar></IonSearchbar>
+          <IonSearchbar className='rounded-b-3xl mt-2 px-4 py-4 bg-[#232323]'></IonSearchbar>
        
     )
 }

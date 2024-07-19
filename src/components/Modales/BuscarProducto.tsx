@@ -3,6 +3,7 @@ import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonList,
 import { collection, getDocs, query, where, doc, updateDoc, Timestamp, addDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import VerDetalle from './VerDetalle';
+import {Button} from "@nextui-org/react";
 
 
 interface BuscarProductoProps {
@@ -124,41 +125,64 @@ const BuscarProducto: React.FC<BuscarProductoProps> = ({ showModal, setShowModal
 
   return (
     <IonModal isOpen={showModal} onDidDismiss={closeModal}>
-      <IonHeader>
-        <IonToolbar>
+      <IonHeader >
+        <IonToolbar >
           <IonTitle>Buscar Producto</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        <IonInput
-          value={searchValue}
-          placeholder="Ingrese código del producto o nombre"
-          onIonChange={handleSearchInputChange}
-        ></IonInput>
-        <IonButton expand="full" onClick={handleSearch}>Buscar</IonButton>
-        <IonButton expand="full" onClick={() => setScan(true)}>Escanear</IonButton>
-        {scan && (
-          // Componente de escaneo QR
-          <div>Escaneo QR</div>
-        )}
-        <IonList>
-          {resultados.map((producto, index) => (
-            <IonItem key={index}>
-              <IonLabel>{producto.nombre}</IonLabel>
-              <IonLabel>{producto.codigo}</IonLabel>
-              <IonLabel>{producto.cantidad} en inventario</IonLabel>
-              <IonLabel>Precio: ${producto.precio}</IonLabel> {/* Muestra el precio */}
-              <IonSelect value={selectedCantidad} onIonChange={(e) => setSelectedCantidad(parseInt(e.detail.value!, 10))}>
-                {[...Array(producto.cantidad).keys()].map((cantidad) => (
-                  <IonSelectOption key={cantidad + 1} value={cantidad + 1}>{cantidad + 1}</IonSelectOption>
-                ))}
-              </IonSelect>
-              <IonButton onClick={() => handleVenta(producto.codigo, selectedCantidad, producto.precio)}>Vender</IonButton>
-              <IonButton onClick={() => handleVerDetalle(producto)}>Ver Detalle</IonButton> {/* Agrega botón para ver detalle */}
-            </IonItem>
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <IonInput
+      value={searchValue}
+      placeholder="Ingrese código del producto o nombre"
+      onIonChange={handleSearchInputChange}
+      style={{ width: '80%', marginBottom: '20px ' }}
+    ></IonInput>
+    <Button
+      expand="full"
+      className="ion-margin-top bg-blue-500 hover:bg-red-700 text-white px-8 py-4 text-lg"
+      onClick={handleSearch}
+      style={{ width: '80%', marginBottom: '10px' }}
+    >
+      Buscar
+    </Button>
+    <Button
+      expand="full"
+      className="ion-margin-top bg-blue-500 hover:bg-red-700 text-white px-8 py-4 text-lg"
+      onClick={() => setScan(true)}
+      style={{ width: '80%', marginTop: '20px' }}
+    >
+      Escanear
+    </Button>
+  </div>
+  {scan && (
+    // Componente de escaneo QR
+    <div>Escaneo QR</div>
+  )}
+  <IonList className='mt-[20px]'>
+    {resultados.map((producto, index) => (
+      <IonItem key={index}>
+        <IonLabel>{producto.nombre}</IonLabel>
+        <IonLabel>{producto.codigo}</IonLabel>
+        <IonLabel>{producto.cantidad} en inventario</IonLabel>
+        <IonLabel>Precio: ${producto.precio}</IonLabel> {/* Muestra el precio */}
+        <IonSelect
+          value={selectedCantidad}
+          onIonChange={(e) => setSelectedCantidad(parseInt(e.detail.value!, 10))}
+        >
+          {[...Array(producto.cantidad).keys()].map((cantidad) => (
+            <IonSelectOption key={cantidad + 1} value={cantidad + 1}>
+              {cantidad + 1}
+            </IonSelectOption>
           ))}
-        </IonList>
-      </IonContent>
+        </IonSelect>
+        <IonButton onClick={() => handleVenta(producto.codigo, selectedCantidad, producto.precio)}>Vender</IonButton>
+        <IonButton onClick={() => handleVerDetalle(producto)}>Ver Detalle</IonButton> {/* Agrega botón para ver detalle */}
+      </IonItem>
+    ))}
+  </IonList>
+</IonContent>
+
     </IonModal>
   );
   

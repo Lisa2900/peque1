@@ -19,8 +19,8 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ abrir, cerra }) => {
 
   const mostrarAlerta = () => {
     swal({
-      title: "Good job!",
-      text: "You clicked the button!",
+      title: "Bien hecho!",
+      text: "¡Has agregado nuevo producto correctamente!",
       icon: "success"
     });
   };
@@ -50,29 +50,29 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ abrir, cerra }) => {
   return (
     <IonModal isOpen={abrir} onDidDismiss={() => cerra(false)}>
       <IonContent>
-        <div className="relative ml-[5px] mt-[-10px]">
-          <div className="bg-zinc-800 text-white p-6 max-w-sm mx-auto rounded-lg relative z-20">
-            <h2 className="text-lg font-semibold mb-4">Create New Product</h2>
+        <div className="relative ml-[5px] mt-[5px]">
+          <div className="bg-[#202020] text-white p-6 rounded-xl max-w-sm mx-auto rounded-b-3xl relative z-20">
+            <h2 className="text-lg font-semibold mb-4">Crear Nuevo Producto</h2>
             <form>
               <div className="mb-4">
                 <IonLabel className="block text-white mb-1">Nombre del Producto *</IonLabel>
-                <IonInput className="bg-zinc-900 text-white" value={nombre} onIonChange={(e) => setNombre(e.detail.value!)} required></IonInput>
+                <IonInput className="bg-[#282828] text-white" value={nombre} onIonChange={(e) => setNombre(e.detail.value!)} required></IonInput>
               </div>
               <div className="mb-4">
                 <IonLabel className="block text-white mb-1">Codigo Producto *</IonLabel>
-                <IonInput className="bg-zinc-900 text-white" value={codigo} onIonChange={(e) => setCodigo(e.detail.value!)} required></IonInput>
+                <IonInput className="bg-[#282828] text-white" value={codigo} onIonChange={(e) => setCodigo(e.detail.value!)} required></IonInput>
               </div>
               <div className="mb-4">
                 <IonLabel className="block text-white mb-1">Cantidad *</IonLabel>
-                <IonInput className="bg-zinc-900 text-white" type="number" value={cantidad} onIonChange={(e) => setCantidad(e.detail.value!)} required></IonInput>
+                <IonInput className="bg-[#282828] text-white" type="number" value={cantidad} onIonChange={(e) => setCantidad(e.detail.value!)} required></IonInput>
               </div>
               <div className="mb-4">
                 <IonLabel className="block text-white mb-1">Precio *</IonLabel>
-                <IonInput className="bg-zinc-900 text-white" type="number" value={precio} onIonChange={(e) => setPrecio(e.detail.value!)} required></IonInput>
+                <IonInput className="bg-[#282828] text-white" type="number" value={precio} onIonChange={(e) => setPrecio(e.detail.value!)} required></IonInput>
               </div>
               <div className="mb-4">
                 <IonLabel className="block text-white mb-1">Categoría *</IonLabel>
-                <IonSelect className="bg-zinc-900 text-white" value={categoria} onIonChange={(e) => setCategoria(e.detail.value)}>
+                <IonSelect className="bg-[#282828] text-white" value={categoria} onIonChange={(e) => setCategoria(e.detail.value)}>
                   <IonSelectOption value="">Seleccione una categoría</IonSelectOption>
                   <IonSelectOption value="celulares">Celulares</IonSelectOption>
                   <IonSelectOption value="audifonos">Audífonos</IonSelectOption>
@@ -85,7 +85,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ abrir, cerra }) => {
                   Cancel
                 </IonButton>
                 <IonButton onClick={agregarProducto} className=" text-white px-4 py-2 rounded">
-                  Add
+                  Agregar 
                 </IonButton>
               </div>
             </form>

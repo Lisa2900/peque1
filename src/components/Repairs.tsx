@@ -3,6 +3,7 @@ import { IonContent, IonHeader, IonToolbar, IonTitle, IonList, IonItem, IonLabel
 import { collection, getDocs, query, where, QuerySnapshot, DocumentData, CollectionReference } from 'firebase/firestore';
 import { db } from '../firebase';
 import RepairModal from './Modales/RepairModal';
+import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Input, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Avatar} from "@nextui-org/react";
 
 interface Repair {
   id: string;
@@ -75,31 +76,32 @@ const Repairs: React.FC = () => {
 
   return (
     <>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Reparaciones</IonTitle>
-        </IonToolbar>
+    
+      <IonHeader >
       </IonHeader>
-      <IonContent>
-        <IonSearchbar value={searchText} onIonInput={handleSearch} placeholder="Buscar por folio"></IonSearchbar>
-        {loading ? (
-          <IonText>Cargando...</IonText>
-        ) : (
-          <IonList>
-            {repairs.map((repair) => (
-              <IonItem key={repair.id} onClick={() => handleOpenModal(repair)}>
-                <IonLabel>
-                  <h2>{repair.title}</h2>
-                  <p>Estado: {repair.status}</p>
-                  <p>Fecha: {new Date(repair.fechaRegistro.seconds * 1000).toLocaleString()}</p>
-                  <p>Marca: {repair.brand}</p>
-                  <p>Modelo: {repair.model}</p>
-                </IonLabel>
-              </IonItem>
-            ))}
-          </IonList>
-        )}
-      </IonContent>
+      <div className="p-4 bg-[#232323] rounded-2xl border border-transparent shadow-md text-white mb-4 mt" style={{ overflowY: 'auto', maxHeight: '400px' }}>
+  <IonTitle>Reparaciones</IonTitle>
+
+  <IonSearchbar value={searchText} onIonInput={handleSearch} placeholder="Buscar por folio"></IonSearchbar>
+    {loading ? (
+      <IonText>Cargando...</IonText>
+    ) : (
+      <IonList>
+        {repairs.map((repair) => (
+          <IonItem key={repair.id} onClick={() => handleOpenModal(repair)}>
+            <IonLabel>
+              <h2>{repair.title}</h2>
+              <p>Estado: {repair.status}</p>
+              <p>Fecha: {new Date(repair.fechaRegistro.seconds * 1000).toLocaleString()}</p>
+              <p>Marca: {repair.brand}</p>
+              <p>Modelo: {repair.model}</p>
+            </IonLabel>
+          </IonItem>
+        ))}
+      </IonList>
+    )}
+</div>
+
       <RepairModal isOpen={modalOpen} onClose={handleCloseModal} repair={currentRepair} />
     </>
   );

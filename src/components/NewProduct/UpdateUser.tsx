@@ -66,28 +66,28 @@ const UpdateUser: React.FC<UpdateUserProps> = ({ open, close, item }) => {
     <IonModal isOpen={open} onDidDismiss={close}>
       <IonContent>
         <div className="flex items-center justify-center h-full">
-          <div className="bg-zinc-800 text-white p-6 max-w-sm mx-auto rounded-lg">
+          <div className="bg-[#202020] text-white p-6 max-w-sm mx-auto rounded-xl">
             <h2 className="text-lg font-semibold mb-4">Actualizar Producto</h2>
             <form>
               <div className="mb-4">
                 <IonLabel className="block text-white mb-1">Nombre del Producto *</IonLabel>
-                <IonInput className="bg-zinc-900 text-white" value={nombre} onIonChange={(e) => setNombre(e.detail.value!)} required></IonInput>
+                <IonInput className="bg-[#282828] text-white" value={nombre} onIonChange={(e) => setNombre(e.detail.value!)} required></IonInput>
               </div>
               <div className="mb-4">
                 <IonLabel className="block text-white mb-1">Código Producto *</IonLabel>
-                <IonInput className="bg-zinc-900 text-white" value={codigo} onIonChange={(e) => setCodigo(e.detail.value!)} required></IonInput>
+                <IonInput className="bg-[#282828] text-white" value={codigo} onIonChange={(e) => setCodigo(e.detail.value!)} required></IonInput>
               </div>
               <div className="mb-4">
                 <IonLabel className="block text-white mb-1">Cantidad *</IonLabel>
-                <IonInput className="bg-zinc-900 text-white" type="number" value={cantidad} onIonChange={(e) => setCantidad(e.detail.value!)} required></IonInput>
+                <IonInput className="bg-[#282828] text-white" type="number" value={cantidad} onIonChange={(e) => setCantidad(e.detail.value!)} required></IonInput>
               </div>
               <div className="mb-4">
                 <IonLabel className="block text-white mb-1">Precio *</IonLabel>
-                <IonInput className="bg-zinc-900 text-white" type="number" value={precio} onIonChange={(e) => setPrecio(e.detail.value!)} required></IonInput>
+                <IonInput className="bg-[#282828] text-white" type="number" value={precio} onIonChange={(e) => setPrecio(e.detail.value!)} required></IonInput>
               </div>
               <div className="mb-4">
                 <IonLabel className="block text-white mb-1">Categoría *</IonLabel>
-                <IonSelect className="bg-zinc-900 text-white" value={categoria} onIonChange={(e) => setCategoria(e.detail.value)}>
+                <IonSelect className="bg-[#282828] text-white" value={categoria} onIonChange={(e) => setCategoria(e.detail.value)}>
                   <IonSelectOption value="">Seleccione una categoría</IonSelectOption>
                   <IonSelectOption value="celulares">Celulares</IonSelectOption>
                   <IonSelectOption value="audifonos">Audífonos</IonSelectOption>
@@ -96,7 +96,7 @@ const UpdateUser: React.FC<UpdateUserProps> = ({ open, close, item }) => {
                 </IonSelect>
               </div>
               <div className="flex justify-end space-x-4">
-                <IonButton onClick={close} className=" text-white px-4 py-2 rounded">Cancelar</IonButton>
+                <IonButton onClick={close} className=" text-white px-4 py-2 rounded-3xl">Cancelar</IonButton>
                 <IonButton onClick={actualizarProducto} className=" text-white px-4 py-2 rounded">Actualizar</IonButton>
               </div>
             </form>

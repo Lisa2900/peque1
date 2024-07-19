@@ -104,10 +104,17 @@ const App: React.FC = () => {
             <div className="container mt-4 px-4">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
                     <div className="flex flex-row space-x-2">
-                        <Button color="primary" onClick={() => setCerraFrom(!estadoFrom)}>
+                        <Button color="primary" className="hover:-translate-y-1 
+                     hover:scale-110 
+                     hover:bg-black-100" 
+                     onClick={() => setCerraFrom(!estadoFrom)}>
                             Agregar nuevo producto
                         </Button>
-                        <Button onClick={handleExportToPDF}>
+                        <Button 
+                        className="hover:-translate-y-1 
+                         hover:scale-110 
+                        hover:bg-white-1000"
+                        onClick={handleExportToPDF}>
                             Exportar a PDF
                         </Button>
                     </div>

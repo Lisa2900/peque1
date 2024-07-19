@@ -6,7 +6,7 @@ import Curp from '../img/curp.png';
 
 const Services = () => {
     return (
-        <div className="bg-zinc-900 rounded-lg shadow-md p-4 mb-4">
+        <div className="p-4 bg-[#232323] rounded-2xl border border-transparent shadow-md text-white mb-4 ">
             <h2 className="text-xl font-bold mb-4">Servicios</h2>
             <IonList>
                 <IonItem>

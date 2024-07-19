@@ -14,6 +14,8 @@ import {
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
 import NotificationModal from '../Modales/NotificationModal';
+import { Button } from "@nextui-org/react";
+import {Select, SelectItem} from "@nextui-org/react";
 
 interface RegistrarReparacionProps {
   showModal: boolean;
@@ -98,6 +100,7 @@ const RegistrarReparacion: React.FC<RegistrarReparacionProps> = ({ showModal, se
 
   return (
     <>
+    
       <IonModal isOpen={showModal} onDidDismiss={closeModal}>
         <IonHeader>
           <IonToolbar>
@@ -106,8 +109,9 @@ const RegistrarReparacion: React.FC<RegistrarReparacionProps> = ({ showModal, se
         </IonHeader>
         <IonContent>
           <IonSelect
+          className='bg-[#282828] rounded-lg mt-1'
             value={deviceType}
-            placeholder="Selecciona tipo de dispositivo"
+            placeholder="  Selecciona tipo de dispositivo"
             onIonChange={(e) => setDeviceType(e.detail.value)}
           >
             <IonSelectOption value="telefono">Teléfono</IonSelectOption>
@@ -115,46 +119,58 @@ const RegistrarReparacion: React.FC<RegistrarReparacionProps> = ({ showModal, se
             <IonSelectOption value="computadora">Computadora</IonSelectOption>
           </IonSelect>
           <IonInput
+            className="bg-[#282828] text-white rounded-lg mt-1 "
             value={brand}
-            placeholder="Marca"
+            placeholder="  Marca"
             onIonChange={handleInputChange(setBrand)}
           ></IonInput>
           <IonInput
+           className="bg-[#282828] text-white rounded-lg mt-1"
             value={model}
-            placeholder="Modelo"
+            placeholder="  Modelo"
             onIonChange={handleInputChange(setModel)}
           ></IonInput>
           <IonInput
+          className="bg-[#282828] text-white rounded-lg mt-1"
             value={repairType}
-            placeholder="Reparación a realizar"
+            placeholder="  Reparación a realizar"
             onIonChange={handleInputChange(setRepairType)}
           ></IonInput>
           <IonTextarea
+          className="bg-[#282828] text-white rounded-lg mt-1"
             value={description}
-            placeholder="Descripción detallada de la reparación"
+            placeholder="  Descripción detallada de la reparación"
             onIonChange={handleInputChange(setDescription)}
           ></IonTextarea>
           <IonInput
+          className="bg-[#282828] text-white rounded-lg mt-1"
             value={customerName}
-            placeholder="Nombre del cliente"
+            placeholder="  Nombre del cliente"
             onIonChange={handleInputChange(setCustomerName)}
           ></IonInput>
           <IonInput
+          className="bg-[#282828] text-white rounded-lg mt-1"
             value={contactNumber}
-            placeholder="Número de contacto"
+            placeholder="  Número de contacto"
             onIonChange={handleInputChange(setContactNumber)}
           ></IonInput>
           <IonInput
+          className="bg-[#282828] text-white rounded-lg mt-1"
             value={technician}
-            placeholder="Técnico asignado"
+            placeholder="  Técnico asignado"
             onIonChange={handleInputChange(setTechnician)}
           ></IonInput>
-          <IonButton expand="full" onClick={handleRegisterRepair}>
+          <Button expand="full" className="ion-margin-top bg-blue-500 hover:bg-red-700 text-white px-8 py-4 text-lg ml-9"
+            onClick={handleRegisterRepair}
+            style={{ width: '85%', marginBottom: '1px' }}>
             Registrar
-          </IonButton>
-          <IonButton expand="full" onClick={closeModal}>
+          </Button>
+          <Button expand="full" className="ion-margin-top bg-blue-500 hover:bg-red-700 text-white px-8 py-4 text-lg ml-9"
+            onClick={closeModal}
+            style={{ width: '85%', marginBottom: '10px' }}
+            >
             Cancelar
-          </IonButton>
+          </Button>
         </IonContent>
       </IonModal>
       <NotificationModal
@@ -162,6 +178,7 @@ const RegistrarReparacion: React.FC<RegistrarReparacionProps> = ({ showModal, se
         setShowModal={setShowNotification}
         success={isSuccess}
       />
+      
     </>
   );
 };

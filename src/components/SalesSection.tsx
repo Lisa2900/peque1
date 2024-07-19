@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { IonButton, IonItem, IonLabel, IonList } from '@ionic/react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
-import {Button} from "@nextui-org/react";
-import {Card, CardHeader, CardBody, Image} from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import logo from '../img/Logonuevoxd.png'; // Asegúrate de tener la imagen en tu proyecto
 
 interface Sale {
   producto: string;
@@ -17,9 +17,6 @@ interface Sale {
 function SalesSection() {
   const [sales, setSales] = useState<Sale[]>([]);
   const [totalSales, setTotalSales] = useState<number>(0);
-  interface jsPDFWithAutoTable extends jsPDF {
-    autoTable: (options: any) => jsPDF;
-}
 
   useEffect(() => {
     const fetchSales = async () => {
@@ -39,13 +36,22 @@ function SalesSection() {
     fetchSales();
   }, []);
 
-  const generateReport = () => {
+  const generateReport = async () => {
     if (!sales.length) {
       console.error("No hay ventas para generar el reporte");
       return;
     }
 
-    const doc = new jsPDF() as jsPDFWithAutoTable;
+    const imgData = await fetch(logo)
+      .then(res => res.blob())
+      .then(blob => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      }));
+
+    const doc = new jsPDF();
 
     const title = "Reporte de ventas del día";
     const fontSize = 18;
@@ -54,7 +60,22 @@ function SalesSection() {
     const titleWidth = doc.getStringUnitWidth(title) * fontSize / doc.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) / 2;
 
-    doc.text(title, titleX, 20);
+    // Ajusta los parámetros de ancho y alto según sea necesario
+    const imageWidth = 50; // Ancho de la imagen
+    const imageHeight = 25; // Alto de la imagen
+    const imageX = 5; // Coordenada X (más a la izquierda)
+    const imageY = 10; // Coordenada Y
+
+    doc.addImage(imgData as string, 'PNG', imageX, imageY, imageWidth, imageHeight); // Añade la imagen con los parámetros ajustados
+
+    // Añadir fecha en la parte superior derecha
+    const date = new Date().toLocaleDateString();
+    const dateX = pageWidth - 40; // Ajusta esta posición según sea necesario
+    const dateY = 20; // Coordenada Y
+
+    doc.text(date, dateX, dateY);
+
+    doc.text(title, titleX, 40);
 
     const tempTable = document.createElement('table');
     tempTable.innerHTML = `
@@ -80,15 +101,16 @@ function SalesSection() {
 
     doc.autoTable({
       html: tempTable,
-      startY: 30,
+      startY: 60,
       styles: { overflow: 'linebreak' },
       columnStyles: { text: { cellWidth: 'wrap' } },
     });
 
     doc.save('reporte_ventas.pdf');
   };
+
   return (
-    <div className="p-4 bg-zinc-900 rounded-lg shadow-md text-white mb-4">
+    <div className="p-4 bg-[#232323] rounded-2xl border border-transparent shadow-md text-white mb-4 ">
       <h2 className="text-xl font-bold mb-4">Ventas del día</h2>
       <SalesList sales={sales} />
       <p className="font-bold">Total de venta: ${totalSales}</p>
@@ -102,7 +124,7 @@ function SalesSection() {
 
 const SalesList: React.FC<{ sales: Sale[] }> = ({ sales }) => {
   return (
-    <IonList>
+    <IonList className='bg-black-900'>
       {sales.map((sale, index) => (
         <IonItem key={index}>
           <IonLabel>{sale.producto}</IonLabel>
