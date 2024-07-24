@@ -6,6 +6,7 @@ import {
   IonHeader,
   IonToolbar,
   IonTitle,
+  IonButton
 } from '@ionic/react';
 import { checkmarkCircle, closeCircle } from 'ionicons/icons';
 
@@ -35,9 +36,16 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ showModal, setSho
       <IonContent className="ion-text-center">
         <IonIcon
           icon={success ? checkmarkCircle : closeCircle}
-          style={{ fontSize: '100px', color: success ? 'green' : 'red' }}
+          className="notification-icon"
         />
+        <IonButton onClick={() => setShowModal(false)}>Cerrar</IonButton>
       </IonContent>
+      <style>{`
+        .notification-icon {
+          font-size: 100px;
+          color: ${success ? 'green' : 'red'};
+        }
+      `}</style>
     </IonModal>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   IonContent,
   IonHeader,
@@ -23,8 +23,9 @@ import { ref, get, getDatabase, onValue } from 'firebase/database';
 import { app } from '../firebase';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import { phonePortraitOutline } from 'ionicons/icons';
-import {Button} from "@nextui-org/react";
-import {Card, CardHeader, CardBody, CardFooter, Divider, Link, Image} from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
+import { Card } from "@nextui-org/react";
+
 const Scanner: React.FC = () => {
   const db = getDatabase(app);
   const firestore = getFirestore(app);
@@ -33,6 +34,7 @@ const Scanner: React.FC = () => {
   const [manualCode, setManualCode] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [webModalOpen, setWebModalOpen] = useState<boolean>(false);
+  const [shouldOpenScannerModal, setShouldOpenScannerModal] = useState<boolean>(false);
 
   useEffect(() => {
     const requestPermissions = async () => {
@@ -49,13 +51,15 @@ const Scanner: React.FC = () => {
       if (snapshot.exists()) {
         const scannedValue = snapshot.val();
         setScannedData(scannedValue);
-        fetchProductDetails(scannedValue); // Llamar a fetchProductDetails cuando se detecte un valor
-        setIsModalOpen(true); // Abrir el modal automáticamente cuando se detecte un valor
+        fetchProductDetails(scannedValue);
+        if (shouldOpenScannerModal) {
+          setIsModalOpen(true);
+          setShouldOpenScannerModal(false);
+        }
       } else {
         setScannedData('');
         setProductDetails(null);
-        setIsModalOpen(false); // Cerrar el modal si no hay valor
-        // Abrir modal en la versión web cuando no hay valor en Firebase
+        setIsModalOpen(false);
         if (!isPlatform('android') && !isPlatform('ios')) {
           setWebModalOpen(true);
         }
@@ -65,7 +69,7 @@ const Scanner: React.FC = () => {
     return () => {
       unsubscribe();
     };
-  }, [db]);
+  }, [db, shouldOpenScannerModal]);
 
   const fetchProductDetails = async (codigo: string) => {
     const q = query(collection(firestore, 'inventario'), where('codigo', '==', codigo));
@@ -80,14 +84,14 @@ const Scanner: React.FC = () => {
   };
 
   const openScannerModal = () => {
-    setIsModalOpen(true);
+    setShouldOpenScannerModal(true);
   };
 
   const handleManualCodeInput = () => {
     if (manualCode) {
       setScannedData(manualCode);
       fetchProductDetails(manualCode);
-      setIsModalOpen(true); // Abrir el modal cuando se ingresa un código manual
+      setIsModalOpen(true);
     }
   };
 
@@ -111,12 +115,11 @@ const Scanner: React.FC = () => {
         const mockBarcode = snapshot.val();
         setScannedData(mockBarcode);
         fetchProductDetails(mockBarcode);
-        setIsModalOpen(true); // Abrir el modal cuando se detecta un valor en la versión web
+        setIsModalOpen(true);
       } else {
         setScannedData('');
         setProductDetails(null);
-        setIsModalOpen(false); // Cerrar el modal si no hay valor en la versión web
-        // Abrir modal en la versión web cuando no hay valor en Firebase
+        setIsModalOpen(false);
         setWebModalOpen(true);
       }
     }
@@ -131,7 +134,7 @@ const Scanner: React.FC = () => {
         const scannedValue = barcodes[0].rawValue || 'No data found';
         setScannedData(scannedValue);
         fetchProductDetails(scannedValue);
-        setIsModalOpen(true); // Abrir el modal cuando se escanea desde la cámara
+        setIsModalOpen(true);
       } else {
         setScannedData('No barcodes found');
       }
@@ -143,7 +146,7 @@ const Scanner: React.FC = () => {
 
   return (
     <>
-      <Button expand="full" 
+      <Button  
        className="ion-margin-top bg-blue-500 hover:bg-red-700 text-white px-8 py-4 text-lg"
       onClick={openScannerModal}
       style={{ width: '100%', marginBottom: '10px' }}
@@ -157,22 +160,20 @@ const Scanner: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
-        <IonGrid>
-        <IonRow  className="flex items-center justify-center">
-        <IonCol size="12" size-md="8" size-lg="6">
-        <div className="flex flex-col items-center">
-
-        <IonInput
-          className="ion-margin-top w-full max-w-md"
-          value={manualCode}
-                  placeholder="Ingresar código manual"
-                  onIonChange={e => setManualCode(e.detail.value!)}
-                  clearInput
-                />
-                <Button color="primary" variant="solid"           className="ion-margin-top bg-blue-500 hover:bg-red-700 text-white px-8 py-4 text-lg"  
-                onClick={handleManualCodeInput}>
-                  Buscar
-                </Button>
+          <IonGrid>
+            <IonRow className="flex items-center justify-center">
+              <IonCol size="12" size-md="8" size-lg="6">
+                <div className="flex flex-col items-center">
+                  <IonInput
+                    className="ion-margin-top w-full max-w-md"
+                    value={manualCode}
+                    placeholder="Ingresar código manual"
+                    onIonChange={e => setManualCode(e.detail.value!)}
+                    clearInput
+                  />
+                  <Button color="primary" variant="solid" className="ion-margin-top bg-blue-500 hover:bg-red-700 text-white px-8 py-4 text-lg" onClick={handleManualCodeInput}>
+                    Buscar
+                  </Button>
                 </div>
               </IonCol>
             </IonRow>
@@ -184,7 +185,7 @@ const Scanner: React.FC = () => {
                       <IonCardTitle>Código escaneado</IonCardTitle>
                     </IonCardHeader>
                     <IonCardContent>
-                    <IonText style={{color:'white'}}>
+                      <IonText style={{color:'white'}}>
                         <p>{scannedData}</p>
                       </IonText>
                     </IonCardContent>
@@ -200,7 +201,7 @@ const Scanner: React.FC = () => {
                       <IonCardTitle>Detalles del Producto</IonCardTitle>
                     </IonCardHeader>
                     <IonCardContent>
-                    <IonText style={{color:'white'}}>
+                      <IonText style={{color:'white'}}>
                         <p><strong>Nombre:</strong> {productDetails.nombre}</p>
                         <p><strong>Categoría:</strong> {productDetails.categoria}</p>
                         <p><strong>Código:</strong> {productDetails.codigo}</p>
@@ -220,7 +221,7 @@ const Scanner: React.FC = () => {
                         <IonCardTitle>No se encontraron detalles del producto</IonCardTitle>
                       </IonCardHeader>
                       <IonCardContent>
-                      <IonText style={{color:"white"}}>
+                        <IonText style={{color:"white"}}>
                           <p>No se encontraron detalles del producto para este código.</p>
                         </IonText>
                       </IonCardContent>
@@ -236,16 +237,13 @@ const Scanner: React.FC = () => {
       <IonModal isOpen={webModalOpen} onDidDismiss={closeWebModal}>
         <IonHeader>
           <IonToolbar>
-            <IonTitle>No se encontró valor en Firebase</IonTitle>
-            <IonButton onClick={closeWebModal} slot="end">
-              Cerrar
-            </IonButton>
+            <IonTitle>Información</IonTitle>
+            <Button onClick={closeWebModal} slot="end" className="bg-red-500 text-white px-2 py-4"> X </Button>
           </IonToolbar>
         </IonHeader>
-        <IonContent className="ion-padding ion-text-center">
-          <IonIcon icon={phonePortraitOutline} style={{ fontSize: '100px', color: 'black' }} />
+        <IonContent className="ion-padding">
           <IonText>
-            <p>Por favor, escanea el código desde la aplicación móvil.</p>
+            <p>No se encontró ningún valor en Firebase. Intenta con otro código o verifica tu conexión.</p>
           </IonText>
         </IonContent>
       </IonModal>

@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { IonButton, IonItem, IonLabel, IonList } from '@ionic/react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Button } from "@nextui-org/react";
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
-import logo from '../img/Logonuevoxd.png'; // Asegúrate de tener la imagen en tu proyecto
+import { Button } from '@nextui-org/react';
 
 interface Sale {
   producto: string;
@@ -17,6 +16,9 @@ interface Sale {
 function SalesSection() {
   const [sales, setSales] = useState<Sale[]>([]);
   const [totalSales, setTotalSales] = useState<number>(0);
+  interface jsPDFWithAutoTable extends jsPDF {
+    autoTable: (options: any) => jsPDF;
+}
 
   useEffect(() => {
     const fetchSales = async () => {
@@ -36,47 +38,23 @@ function SalesSection() {
     fetchSales();
   }, []);
 
-  const generateReport = async () => {
+  const generateReport = () => {
     if (!sales.length) {
       console.error("No hay ventas para generar el reporte");
       return;
     }
-
-    const imgData = await fetch(logo)
-      .then(res => res.blob())
-      .then(blob => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      }));
-
-    const doc = new jsPDF();
-
+  
+    const doc = new jsPDF() as jsPDFWithAutoTable;
+  
     const title = "Reporte de ventas del día";
     const fontSize = 18;
     doc.setFontSize(fontSize);
     const pageWidth = doc.internal.pageSize.width;
     const titleWidth = doc.getStringUnitWidth(title) * fontSize / doc.internal.scaleFactor;
     const titleX = (pageWidth - titleWidth) / 2;
-
-    // Ajusta los parámetros de ancho y alto según sea necesario
-    const imageWidth = 50; // Ancho de la imagen
-    const imageHeight = 25; // Alto de la imagen
-    const imageX = 5; // Coordenada X (más a la izquierda)
-    const imageY = 10; // Coordenada Y
-
-    doc.addImage(imgData as string, 'PNG', imageX, imageY, imageWidth, imageHeight); // Añade la imagen con los parámetros ajustados
-
-    // Añadir fecha en la parte superior derecha
-    const date = new Date().toLocaleDateString();
-    const dateX = pageWidth - 40; // Ajusta esta posición según sea necesario
-    const dateY = 20; // Coordenada Y
-
-    doc.text(date, dateX, dateY);
-
-    doc.text(title, titleX, 40);
-
+  
+    doc.text(title, titleX, 20);
+  
     const tempTable = document.createElement('table');
     tempTable.innerHTML = `
       <thead>
@@ -96,19 +74,23 @@ function SalesSection() {
             <td>$${sale.precio}</td>
           </tr>
         `).join('')}
+        <tr>
+          <td colspan="3" align="right"><b>Total:</b></td>
+          <td><b>$${totalSales}</b></td>
+        </tr>
       </tbody>
     `;
-
+  
     doc.autoTable({
       html: tempTable,
-      startY: 60,
+      startY: 30,
       styles: { overflow: 'linebreak' },
       columnStyles: { text: { cellWidth: 'wrap' } },
     });
-
+  
     doc.save('reporte_ventas.pdf');
   };
-
+  
   return (
     <div className="p-4 bg-[#232323] rounded-2xl border border-transparent shadow-md text-white mb-4 ">
       <h2 className="text-xl font-bold mb-4">Ventas del día</h2>

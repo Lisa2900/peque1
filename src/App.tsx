@@ -112,7 +112,7 @@ const App: React.FC = () => {
                   <IonMenuButton />
                 </IonButtons>
               )}
-              <IonTitle>My App</IonTitle>
+              <IonTitle>Soporte Peque</IonTitle>
             </IonToolbar>
           </IonHeader>
           <IonContent>

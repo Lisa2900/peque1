@@ -1,0 +1,35 @@
+/* Estilo para productos sin inventario */
+.sin-inventario {
+  color: red; /* Cambiar color del texto a rojo */
+  opacity: 0.6; /* Reducir la opacidad para indicar que no hay inventario */
+}
+/* Estilo para la lista de productos en resultados */
+.product-list {
+  display: flex; /* Mostrar elementos en línea */
+  flex-wrap: wrap; /* Permitir que los elementos se envuelvan */
+  gap: 20px; /* Espacio entre elementos */
+  width: 100%; /* Ancho del 100% */
+}
+
+/* Estilo para los detalles del producto */
+.item-details {
+  flex: 1;
+}
+
+/* Estilo para las acciones del producto */
+.item-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Estilo para productos sin inventario */
+.sin-inventario {
+  color: red;
+  opacity: 0.6;
+}
+
+/* Espacio superior en la lista */
+.mt-20px {
+  margin-top: 20px;
+}

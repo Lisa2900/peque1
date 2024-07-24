@@ -2,7 +2,7 @@ import React from 'react';
 import { IonButton, IonContent, IonHeader, IonItem, IonLabel, IonList, IonModal, IonTitle, IonToolbar } from '@ionic/react';
 
 interface VerDetalleProps {
-  producto: Producto;
+  producto: Producto | null; // Permitir que producto sea null
   isOpen: boolean;
   onClose: () => void;
 }
@@ -12,10 +12,14 @@ interface Producto {
   categoria: string;
   codigo: string;
   nombre: string;
-  precio: number; // Agrega el campo precio a la interfaz Producto
+  precio: number; // Agregar el campo precio a la interfaz Producto
 }
 
 const VerDetalle: React.FC<VerDetalleProps> = ({ producto, isOpen, onClose }) => {
+  if (!producto) {
+    return null; // Si producto es null, retornar null o manejar el caso vacío según lo necesites
+  }
+
   return (
     <IonModal isOpen={isOpen} onDidDismiss={onClose}>
       <IonHeader>
